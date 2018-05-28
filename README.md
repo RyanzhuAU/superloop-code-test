@@ -3,14 +3,15 @@
 How to install:
 
    	Backend
-    o	Use maven to build this application. Go to the application folder and type mvn install.
-    o	Go to the target folder, and start the application by "java -jar technical-test-0.1.0.jar".
+    o Use maven to build this application. Go to the application folder and type mvn install.
+    o Go to the target folder, and start the application by "java -jar technical-test-0.1.0.jar".
+	
 	Frontend
-    o	Go to the gui folder. 
-    o	Run “bower install” to install polymer and required components
-    o	Run “npm install -g polymer-cli”
-    o	Run “polymer serve” to start the frontend
-    o	Go to the url: http://localhost:8081/, start the todo app.
+    o Go to the gui folder. 
+    o Run “bower install” to install polymer and required components
+    o Run “npm install -g polymer-cli”
+    o Run “polymer serve” to start the frontend
+    o Go to the url: http://localhost:8081/, start the todo app.
 
 Implemented feature:
 
