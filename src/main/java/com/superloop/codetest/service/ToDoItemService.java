@@ -21,6 +21,8 @@ public interface ToDoItemService {
 
     List<ToDoItem> listToDoItems();
 
+    List<ToDoItem> getFilteredToDoItems(String itemStatus);
+
     void deleteToDoItem(long itemId) throws ToDoItemNotFoundException;
 
     void deleteAllToDoItems();

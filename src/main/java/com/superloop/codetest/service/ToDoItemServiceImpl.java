@@ -130,6 +130,19 @@ public class ToDoItemServiceImpl implements ToDoItemService {
     }
 
     /**
+     * Get items list for selected item status.
+     * @param itemStatusStr
+     * @return
+     */
+    public List<ToDoItem> getFilteredToDoItems(String itemStatusStr) {
+        List<ToDoItem> allItemsList = this.listToDoItems();
+
+        return allItemsList.stream()
+                .filter(item -> item.getItemStatus().equals(ItemStatus.valueOf(itemStatusStr)))
+                .collect(Collectors.toList());
+    }
+
+    /**
      * This function is used to check if the item exist and handle the exception.
      *
      * @param itemId

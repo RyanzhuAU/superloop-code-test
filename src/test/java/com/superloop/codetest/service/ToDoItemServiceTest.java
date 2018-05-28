@@ -150,6 +150,58 @@ public class ToDoItemServiceTest {
     }
 
     @Test
+    public void getFilteredToDoItemsTest() throws Exception {
+        this.toDoItemService.deleteAllToDoItems();
+
+        // test normal scenario
+        ToDoItem item = new ToDoItem("test1", "test detail 1", new Date(), ItemStatus.PENDING);
+        ToDoItem item1 = toDoItemMapBean.addToDoItem(item);
+        item = new ToDoItem("test2", "test detail 2", new Date(), ItemStatus.PENDING);
+        ToDoItem item2 = toDoItemMapBean.addToDoItem(item);
+
+        item = new ToDoItem("test3", "test detail 4", new Date(), ItemStatus.DONE);
+        ToDoItem item3 = toDoItemMapBean.addToDoItem(item);
+
+        List<ToDoItem> pendingToDoItemList = this.toDoItemService.getFilteredToDoItems("PENDING");
+
+        assertThat(pendingToDoItemList.size(), is(2));
+
+        pendingToDoItemList.forEach(toDoItem -> {
+            if (toDoItem.getItemId() == item1.getItemId()) {
+                assertThat(toDoItem.getName(), is(item1.getName()));
+                assertThat(toDoItem.getDescription(), is(item1.getDescription()));
+                assertThat(toDoItem.getItemStatus(), is(item1.getItemStatus()));
+                assertThat(toDoItem.getCreateAt(), is(item1.getCreateAt()));
+                assertThat(toDoItem.getDueDate(), is(item1.getDueDate()));
+            } else if (toDoItem.getItemId() == item2.getItemId()) {
+                assertThat(toDoItem.getName(), is(item2.getName()));
+                assertThat(toDoItem.getDescription(), is(item2.getDescription()));
+                assertThat(toDoItem.getItemStatus(), is(item2.getItemStatus()));
+                assertThat(toDoItem.getCreateAt(), is(item2.getCreateAt()));
+                assertThat(toDoItem.getDueDate(), is(item2.getDueDate()));
+            } else {
+                fail("List todo list item function error. The todo item list contains wrong todo item.");
+            }
+        });
+
+        List<ToDoItem> doneToDoItemList = this.toDoItemService.getFilteredToDoItems("DONE");
+
+        assertThat(doneToDoItemList.size(), is(1));
+
+        doneToDoItemList.forEach(toDoItem -> {
+            if (toDoItem.getItemId() == item3.getItemId()) {
+                assertThat(toDoItem.getName(), is(item3.getName()));
+                assertThat(toDoItem.getDescription(), is(item3.getDescription()));
+                assertThat(toDoItem.getItemStatus(), is(item3.getItemStatus()));
+                assertThat(toDoItem.getCreateAt(), is(item3.getCreateAt()));
+                assertThat(toDoItem.getDueDate(), is(item3.getDueDate()));
+            } else {
+                fail("List todo list item function error. The todo item list contains wrong todo item.");
+            }
+        });
+    }
+
+    @Test
     public void updateToDoItemTest() throws Exception {
         this.toDoItemService.deleteAllToDoItems();
 

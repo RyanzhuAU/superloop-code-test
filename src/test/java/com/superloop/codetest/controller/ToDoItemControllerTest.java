@@ -303,7 +303,51 @@ public class ToDoItemControllerTest {
                 assertThat(item.getItemStatus(), is(ItemStatus.PENDING));
             }
         });
+    }
 
+    @Test
+    public void getFilteredToDoItemsTest() throws Exception {
+        this.prepareTestData();
+
+        MvcResult result = this.mockMvc.perform(get("/todo/getFilteredItemList/PENDING"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString();
+
+        List<ToDoItem> itemList = objectMapper.readValue(content, new TypeReference<List<ToDoItem>>(){});
+
+        assertThat(itemList.size(), is(2));
+
+        itemList.forEach(item -> {
+            if (item.getItemId() == (long) 2) {
+                assertThat(item.getName(), is("test 2"));
+                assertThat(item.getDescription(), isEmptyOrNullString());
+                assertThat(item.getItemStatus(), is(ItemStatus.PENDING));
+            } else if (item.getItemId() == (long) 1) {
+                assertThat(item.getName(), is("test 3"));
+                assertThat(item.getDescription(), isEmptyOrNullString());
+                assertThat(item.getItemStatus(), is(ItemStatus.PENDING));
+            }
+        });
+
+        result = this.mockMvc.perform(get("/todo/getFilteredItemList/DONE"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        content = result.getResponse().getContentAsString();
+
+        itemList = objectMapper.readValue(content, new TypeReference<List<ToDoItem>>(){});
+
+        assertThat(itemList.size(), is(1));
+
+        itemList.forEach(item -> {
+            if (item.getItemId() == (long) 1) {
+                assertThat(item.getName(), is("test 1"));
+                assertThat(item.getDescription(), is("test details"));
+                assertThat(item.getItemStatus(), is(ItemStatus.DONE));
+            }
+        });
     }
 
     private void prepareTestData() throws Exception {

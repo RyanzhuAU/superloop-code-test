@@ -1,5 +1,6 @@
 package com.superloop.codetest.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.superloop.codetest.util.ItemStatus;
 import lombok.Data;
 
@@ -20,6 +21,7 @@ public class ToDoItem {
 
     private Date createAt;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date dueDate;
 
     private ItemStatus itemStatus;

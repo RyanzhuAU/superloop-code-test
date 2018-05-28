@@ -49,10 +49,31 @@ public class ToDoItemController {
         }
     }
 
+    /**
+     * list all of items
+     * @return
+     */
     @RequestMapping(value = "/listAllItems", method = RequestMethod.GET)
     public ResponseEntity getAllToDoItems() {
         try {
             List<ToDoItem> itemList = toDoItemService.listToDoItems();
+
+            return new ResponseEntity(itemList, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /**
+     * Get pending/done todo items
+     * @param itemStatus
+     * @return
+     */
+    @RequestMapping(value = "/getFilteredItemList/{itemStatus}", method = RequestMethod.GET)
+    public ResponseEntity getFilteredToDoItems(@PathVariable("itemStatus") String itemStatus) {
+        try {
+            List<ToDoItem> itemList = toDoItemService.getFilteredToDoItems(itemStatus);
 
             return new ResponseEntity(itemList, HttpStatus.OK);
         } catch (Exception e) {

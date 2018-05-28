@@ -37,6 +37,17 @@ public class ToDoItemMapBean {
     }
 
     public void updateToDoItem(ToDoItem item, long itemId) {
+        if (item.getItemId() == 0) {
+            item.setItemId(itemId);
+        }
+
+        ToDoItem existItem = this.toDoItemMap.get(itemId);
+        item.setCreateAt(existItem.getCreateAt());
+
+        if (item.getDueDate() == null) {
+            item.setDueDate(existItem.getDueDate());
+        }
+
         this.toDoItemMap.put(itemId, item);
     }
 
