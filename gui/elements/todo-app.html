@@ -26,6 +26,7 @@
                 url="http://localhost:8080/todo/getFilteredItemList/DONE"
                 handle-as="json"
                 last-response="{{doneList}}"
+                on-error="_handleListItemsError"
         ></iron-ajax>
 
         <iron-ajax
@@ -34,6 +35,7 @@
                 url="http://localhost:8080/todo/getFilteredItemList/PENDING"
                 handle-as="json"
                 last-response="{{todoList}}"
+                on-error="_handleListItemsError"
         ></iron-ajax>
 
         <iron-ajax id="createToDoItem"
@@ -41,6 +43,7 @@
                    handle-as="json"
                    content-type="application/json"
                    on-response="_handleUpdate"
+                   on-error="_handleCreateItemError"
         ></iron-ajax>
 
         <paper-drawer-panel>
@@ -59,7 +62,7 @@
                                 id="{{item.itemId}}"
                                 name="{{item.name}}"
                                 description="{{item.description}}"
-                                dueDate="{{item.dueDate}}"
+                                due-date="{{item.dueDate}}"
                                 readonly="true"
                         ></todo-element>
                     </template>
@@ -247,33 +250,14 @@
             this.$.getDoneList.generateRequest();
             this.$.getToDoList.generateRequest();
         },
+        _handleListItemsError: function (e) {
+            alert(e.detail.request.xhr.response);
+        },
+        _handleCreateItemError: function (e) {
+            alert(e.detail.request.xhr.response);
+        },
         ready: function (e) {
-//            this.doneList.push({"name": "test", "description": "get here"});
-//            this.doneList.push({"name": "test 1", "description": "get here 1"});
-//
-//            this.todoList.push({"name": "test", "description": "get here"});
-//            this.todoList.push({"name": "test 1", "description": "get here 1"});
-
-
-//            this.todoList = [];
-//            this.doneList = [];
             this.addEventListener('update', this._handleUpdate);
-
-
-//            this.$.tUser.value = randItem(names1) + "-" + randItem(names2);
-//            console.log(this.present);
-//            this.addEventListener('presence', presChange);
-//
-//            function presChange(e) {
-//                var pres = this.present.pop()
-//                this.$.here.innerHTML = pres.occupancy;
-//            }
-//
-//            var todos = this.$.todos;
-//            window.onresize = function (event) {
-//                todos.style.height = window.innerHeight - 200;
-//            };
-//            window.onresize();
         }
     });
 </script>

@@ -78,11 +78,13 @@
                    handle-as="json"
                    content-type="application/json"
                    on-response="_changeResponse"
+                   on-error="_handleUpdateError"
         ></iron-ajax>
 
         <iron-ajax id="deleteToDoItem"
                    method="DELETE"
                    on-response="_changeResponse"
+                   on-error="_handleDeleteError"
         ></iron-ajax>
 
         <!-- local DOM for your element -->
@@ -190,9 +192,12 @@
         _changeResponse: function() {
             this.fire('update');
         },
-//        _checkDesc: function() {
-//            return this.description || this.editing
-//        },
+        _handleUpdateError: function(e) {
+            alert(e.detail.request.xhr.response);
+        },
+        _handleDeleteError: function(e) {
+            alert(e.detail.request.xhr.response);
+        },
         ready: function (e) {
 
         }
