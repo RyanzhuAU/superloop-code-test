@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="../bower_components/polymer/polymer.html" rel="import">
+    <link href="../elements/todo-element.html" rel="import">
+    <link href="../bower_components/paper-drawer-panel/paper-drawer-panel.html" rel="import">
+    <link href="../bower_components/paper-header-panel/paper-header-panel.html" rel="import">
+    <link href="../bower_components/paper-toolbar/paper-toolbar.html" rel="import">
+    <link href="../bower_components/paper-icon-button/paper-icon-button.html" rel="import">
+    <link href="../bower_components/paper-material/paper-material.html" rel="import">
+    <link href="../bower_components/paper-menu/paper-menu.html" rel="import">
+    <link href="../bower_components/paper-item/paper-item.html" rel="import">
+    <link href="../bower_components/paper-input/paper-input.html" rel="import">
+    <link href="../bower_components/paper-input/paper-textarea.html" rel="import">
+    <link href="../bower_components/iron-icons/iron-icons.html" rel="import">
+    <link href="../bower_components/iron-ajax/iron-ajax.html" rel="import">
+    <link href="../bower_components/paper-date-picker-item/paper-datetime-picker-item.html" rel="import">
+
+</head>
+
+<dom-module id="todo-app">
+    <template>
+        <iron-ajax
+                auto
+                id="getDoneList"
+                url="http://localhost:8080/todo/getFilteredItemList/DONE"
+                handle-as="json"
+                last-response="{{doneList}}"
+        ></iron-ajax>
+
+        <iron-ajax
+                auto
+                id="getToDoList"
+                url="http://localhost:8080/todo/getFilteredItemList/PENDING"
+                handle-as="json"
+                last-response="{{todoList}}"
+        ></iron-ajax>
+
+        <iron-ajax id="createToDoItem"
+                   method="POST"
+                   handle-as="json"
+                   content-type="application/json"
+                   on-response="_handleUpdate"
+        ></iron-ajax>
+
+        <paper-drawer-panel>
+            <paper-header-panel class="side-panel" drawer>
+                <paper-toolbar>
+                    <paper-item>Completed Tasks</paper-item>
+                </paper-toolbar>
+                <paper-menu id="completed" class="list">
+                    <template is="dom-if" if="[[!doneList.length]]">
+                        <paper-material class="task-empty">
+                            <paper-item elevation="2">Completed tasks will appear here!</paper-item>
+                        </paper-material>
+                    </template>
+                    <template id="done" is="dom-repeat" items="{{doneList}}">
+                        <todo-element
+                                id="{{item.itemId}}"
+                                name="{{item.name}}"
+                                description="{{item.description}}"
+                                dueDate="{{item.dueDate}}"
+                                readonly="true"
+                        ></todo-element>
+                    </template>
+                </paper-menu>
+            </paper-header-panel>
+            <paper-header-panel main class="main-panel">
+                <paper-toolbar>
+                    <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
+                    <paper-item>Active Tasks {{test}}</paper-item>
+                </paper-toolbar>
+                <div style="border-left: 1px solid #ccc;">
+                    <!-- To create a new Todo -->
+                    <paper-material id="todoEntry" elevation="2">
+                        <paper-input id="newItemName" label="Name"></paper-input>
+                        <paper-textarea id="newItemDesc" label="Description"></paper-textarea>
+                        <paper-datetime-picker-item
+                                id="newItemDueDate"
+                                icon="icons:today"
+                                placeholder="Add date and time"
+                                date-format="Do, MMMM, YYYY">
+                        </paper-datetime-picker-item>
+                        <paper-fab icon="icons:add" on-tap="postItem"></paper-fab>
+                    </paper-material>
+                    <div id="todos">
+                        <template is="dom-if" if="{{!todoList.length}}">
+                            <paper-material class="task-empty">
+                                <paper-item elevation="2">No Tasks remain. Updates are Real-Time so stay tuned!
+                                </paper-item>
+                            </paper-material>
+                        </template>
+                        <template id="tasks" is="dom-repeat" items="{{todoList}}">
+                            <todo-element
+                                    id="{{item.itemId}}"
+                                    name="{{item.name}}"
+                                    description="{{item.description}}"
+                                    due-date="{{item.dueDate}}"
+                            ></todo-element>
+                        </template>
+                    </div>
+                </div>
+            </paper-header-panel>
+        </paper-drawer-panel>
+    </template>
+
+    <style>
+        .list {
+            padding: 0;
+            /* 		border-right: 1px solid #ccc; */
+        }
+
+        .list paper-item {
+            min-height: 80px;
+            border-bottom: 1px solid #dedede;
+            background-color: #fafafa;
+        }
+
+        #todoEntry {
+            margin: 0;
+            width: 100%;
+            max-width: none;
+            border-bottom: 1px solid #ccc;
+        }
+
+        paper-input {
+            margin: 0 4vw;
+            padding: 0;
+        }
+
+        paper-textarea {
+            margin: 0 4vw;
+            padding: 0;
+        }
+
+        paper-material {
+            background-color: #fff;
+            max-width: 640px;
+            width: 95%;
+            margin: 25px auto;
+            position: relative;
+        }
+
+        #todos {
+            overflow-y: scroll;
+            height: 66vh;
+        }
+
+        #todos {
+            overflow-y: scroll;
+        }
+
+        paper-fab {
+            position: absolute;
+            background: #00BCD4;
+            bottom: 2vh;
+            right: 2vw;
+        }
+
+        .main-panel {
+            background-color: #eee;
+            height: 100vh;
+            overflow-y: hidden;
+        }
+
+        .task-empty paper-item {
+            text-align: center;
+            padding: 25px;
+            color: #6f6f6f;
+        }
+
+        paper-toolbar {
+            background: #D32F2F;
+        }
+
+        #made-with {
+            width: 100%;
+            margin: 0;
+            position: fixed;
+            bottom: 0;
+            text-align: center;
+        }
+
+        #made-with img {
+            width: 35%;
+            padding: 10px;
+        }
+
+
+    </style>
+</dom-module>
+
+<script>
+    // element registration
+    Polymer({
+        is: "todo-app",
+        // add properties and methods on the element's prototype
+        properties: {
+            // declare properties for the element's public API
+            todoList: {
+                type: Array,
+                value: [{
+                    "itemId": 5,
+                    "name": "test",
+                    "description": "get here",
+                    "col": "test here abdcd"
+                }, {"itemId": 6, "name": "test 1", "description": "get here 1"}],
+                notify: true
+            },
+            doneList: {
+                type: Array,
+                value: [{"itemId": 2, "name": "test", "description": "get here abcd"}, {
+                    "itemId": 3,
+                    "name": "test 1",
+                    "description": "get here 1"
+                }],
+                notify: true
+            }
+        },
+        _handleUpdate: function () {
+            console.log("update the list here.");
+
+            this.$.getDoneList.generateRequest();
+            this.$.getToDoList.generateRequest();
+        },
+        postItem: function (e) {
+            var name = this.$.newItemName.value;
+            if (!name) {
+                alert("Please input the task name.")
+            }
+
+            var desc = this.$.newItemDesc.value;
+            var dueDate = this.$.newItemDueDate.date;
+
+            this.$.createToDoItem.url = "http://localhost:8080/todo/";
+            this.$.createToDoItem.body = this._getPostBody(name, desc, dueDate);
+            this.$.createToDoItem.generateRequest();
+        },
+        _getPostBody: function (name, desc, dueDate) {
+            return JSON.stringify({
+                "name": name,
+                "desc": desc,
+                "dueDate": dueDate
+            });
+        },
+        _postResponse: function () {
+            this.$.getDoneList.generateRequest();
+            this.$.getToDoList.generateRequest();
+        },
+        ready: function (e) {
+//            this.doneList.push({"name": "test", "description": "get here"});
+//            this.doneList.push({"name": "test 1", "description": "get here 1"});
+//
+//            this.todoList.push({"name": "test", "description": "get here"});
+//            this.todoList.push({"name": "test 1", "description": "get here 1"});
+
+
+//            this.todoList = [];
+//            this.doneList = [];
+            this.addEventListener('update', this._handleUpdate);
+
+
+//            this.$.tUser.value = randItem(names1) + "-" + randItem(names2);
+//            console.log(this.present);
+//            this.addEventListener('presence', presChange);
+//
+//            function presChange(e) {
+//                var pres = this.present.pop()
+//                this.$.here.innerHTML = pres.occupancy;
+//            }
+//
+//            var todos = this.$.todos;
+//            window.onresize = function (event) {
+//                todos.style.height = window.innerHeight - 200;
+//            };
+//            window.onresize();
+        }
+    });
+</script>
